@@ -1,0 +1,86 @@
+<div class="container">
+  <div class="row clearfix">
+    <div class="col-md-12 column">
+      <h3>
+        密码列表
+      </h3>
+    </div>
+  </div>
+
+  <div class="row clearfix">
+    <div class="col-md-12 column">
+      <button type="button" class="new btn btn-success">添加</button>
+    </div>
+  </div>
+  <div class="row clearfix">
+    <div class="col-md-12 column">
+      <form action="/pwds" method="post">
+        <input type="hidden" name="_method" value="delete"/>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>标题</th>
+              <th>URL</th>
+              <th>打开</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @pwds.each_with_index do |pwd, i| %>
+              <tr class="<%= i%2 == 0 ? 'success' : 'active' %>">
+                <td><%= pwd.title %></td>
+                <td><%= pwd.url %></td>
+                <td>
+                  <a href="javascript:rewardTo('<%= pwd.id %>', 'safari')">
+                    <img src="/safari_icon.png" width="30px" height="30px"></img>
+                  </a>
+                  <a href="javascript:rewardTo('<%= pwd.id %>', 'chrome')">
+                    <img src="/chrome_icon.png" width="30px" height="30px"></img>
+                  </a>
+                  <a href="javascript:rewardTo('<%= pwd.id %>', 'ff')">
+                    <img src="/firefox_icon.png" width="30px" height="30px"></img>
+                  </a>
+                </td>
+                <td>
+                  <div class="btn-group btn-group-xs">
+                    <a class="btn btn-default" type="button" data-id="<%= pwd.id %>">
+                      <em class="glyphicon glyphicon-saved"></em> 复制
+                    </a>
+                    <a class="btn btn-default" type="button" href="/pwds/<%= pwd.id %>/edit">
+                      <em class="glyphicon glyphicon-edit"></em> 编辑
+                    </a>
+                    <a class="btn btn-default" type="button" data-id="<%= pwd.id %>">
+                      <em class="glyphicon glyphicon-remove"></em> 删除
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(function() {
+    $('button.new').click(function(e){ window.location.href = "/pwds/new" });
+    $('.glyphicon.glyphicon-saved').parent().click(function(e){
+      var t = e.target;
+      var id = t.nodeName.toLocaleLowerCase == 'em' ? $(t).parent().data('id') : $(t).data('id')
+      $('[name=_method]').val('post');
+      $('form').attr('action', '/pwds/' + id + '/dup').submit();
+    });
+    $('.glyphicon.glyphicon-remove').parent().click(function(e){
+      var t = e.target;
+      var id = t.nodeName.toLocaleLowerCase == 'em' ? $(t).parent().data('id') : $(t).data('id')
+      $('[name=_method]').val('delete');
+      $('form').attr('action', '/pwds/' + id).submit();
+    });
+  });
+
+  function rewardTo (id, type) {
+    $.get('/reward_to/' + id + '?type=' + type);
+  }
+</script>
